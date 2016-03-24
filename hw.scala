@@ -2,31 +2,6 @@ package com.example
 
 import scala.util.Random
 
-trait Car {
-  val brand: String
-}
-
-trait Shiny {
-  val shineRefraction: Int
-}
-
-class BMW extends Car with Shiny {
-  val brand = "BMW"
-  val shineRefraction = 12
-}
-
-class Mercedes extends Car with Shiny {
-  val brand = "Mercedes"
-  val shineRefraction = 14
-}
-
-// vals are implied if left off (best practice)
-case class Calculator(brand: String, model: String = "")
-
-case class Person(val name: String, val age: Int)
-
-case class Greeting(val greeting: String)
-
 object Predef {
   // Implicit number expansion
   val n1 = 1 + 1.0
@@ -37,52 +12,57 @@ object Predef {
   def greeting = println("Hello World!")
 }
 
-object ValueClasses {
-  // Rules: Must extend AnyVal and have only one public val argument
-  // Can provide a performance increase as values are stored on the stack instead of the heap
+object Variables {
+  // def vs val
+  def r1 = Random.nextInt() // Different value every time
+  val r2 = Random.nextInt() // Value doesn't change
 
-  // Add method to String class
-  implicit class StringStuff(val s: String) extends AnyVal {
-    def first: String = s.take(1)
+  val `a long variable name` = 1
+  val x = 3
+  val nameEquality = `x` == x
+
+  //Lazy vals
+  def lazyTest = {
+    println("Called lazyTest")
+    3
   }
+  lazy val lazyVal = lazyTest // println called first time
 
-  val firstLetter = "Bobby".first
-
-  class Dollar(val value: Float) extends AnyVal {
-    override def toString = "$%.2f".format(value)
-  }
-  val benjamin = new Dollar(100)
+  // Mutation (don't do this!)
+  var num = 3
+  num += 1
 }
 
-object WeekDay extends Enumeration {
-  type WeekDay = Value
-  val Mon, Tue, Wed, Thu, Fri, Sat, Sun = Value
+object IfExpressions {
+  val x = 3
+  val isThree = if (x == 3) "It's three" else "It's not three"
+  val mathTest =
+    if (2 + 2 == 5) "Math is broken"
+    else if (2 + 2 == 4) "Math is working okay"
+    else "I got nothing"
 }
 
-object Enumeration {
-  import WeekDay._
+object Strings {
+  val x = 3
+  val y = 2.0
 
-  def isWorkingDay(d: WeekDay) = !(d == Sat || d == Sun)
-  def workDays = WeekDay.values filter isWorkingDay
+  // Interpolation
+  val string = s"1 + $x = ${1 + x}"
+  val formatted = f"${y}%.2f"
+  val rawString = raw"x is: $x\n"
+  val json = s"""{"name": "Billy", "age": $x}"""
+
+  val multiLineStr = """
+    Name: Billy
+    Age: 36
+  """
 }
 
-object DiscriminatedUnion {
-  // Use a sealed trait to limit inheritance to the current file
-  sealed trait HttpMethod
-
-  case class DELETE() extends HttpMethod
-  case class GET() extends HttpMethod
-  case class POST(body: String) extends HttpMethod
-  case class PUT(body: String) extends HttpMethod
-
-  def reqBody(req: HttpMethod) = req match {
-    case POST(body) => Some(body)
-    case PUT(body) => Some(body)
-    case _ => None
-  }
-
-  val postBody = reqBody(POST("name=Bobby"))
-  val getBody = reqBody(GET())
+object Numbers {
+  val anInt = 500
+  val aLong = 500L
+  val aFloat = 500F
+  val aDouble = 500D
 }
 
 object Symbols {
@@ -121,14 +101,12 @@ object RegExes {
   val replaceFirst = re2.replaceFirstIn(str, "Clojure")
 }
 
-object IfExpressions {
-  val x = 3
-  val isThree = if (x == 3) "It's three" else "It's not three"
-  val mathTest =
-    if (2 + 2 == 5) "Math is broken"
-    else if (2 + 2 == 4) "Math is working okay"
-    else "I got nothing"
-}
+// vals are implied if left off (best practice)
+case class Calculator(brand: String, model: String = "")
+
+case class Person(val name: String, val age: Int)
+
+case class Greeting(val greeting: String)
 
 object CaseClasses {
   // Named parameters
@@ -139,27 +117,6 @@ object CaseClasses {
   val Calculator(brand, model) = calc
   // Modify a single value of an existing case class
   val calc2 = calc.copy(model = "TI-82")
-}
-
-object Variables {
-  // def vs val
-  def r1 = Random.nextInt() // Different value every time
-  val r2 = Random.nextInt() // Value doesn't change
-
-  val `a long variable name` = 1
-  val x = 3
-  val nameEquality = `x` == x
-
-  //Lazy vals
-  def lazyTest = {
-    println("Called lazyTest")
-    3
-  }
-  lazy val lazyVal = lazyTest // println called first time
-
-  // Mutation (don't do this!)
-  var num = 3
-  num += 1
 }
 
 object Functions {
@@ -190,22 +147,6 @@ object Functions {
     }
   }
   val capitalNames = capitalizeAll("billy", "bobby", "frank")
-}
-
-object Strings {
-  val x = 3
-  val y = 2.0
-
-  // Interpolation
-  val string = s"1 + $x = ${1 + x}"
-  val formatted = f"${y}%.2f"
-  val rawString = raw"x is: $x\n"
-  val json = s"""{"name": "Billy", "age": $x}"""
-
-  val multiLineStr = """
-    Name: Billy
-    Age: 36
-  """
 }
 
 object Collections {
@@ -260,11 +201,73 @@ object Tuples {
   val (host, port) = t1 // Destructure
 }
 
-object Numbers {
-  val anInt = 500
-  val aLong = 500L
-  val aFloat = 500F
-  val aDouble = 500D
+object Blocks {
+  // Evaluates all expressions returning the value of the last one
+  val codeBlock = {
+    println()
+    3
+  }
+  // Defines a function
+  val functionBlock = { x: Int => x + 1 }
+  // Defines a partial function (i.e., one that can't necessarily handle every input for a given type)
+  val partialFunctionBlock: PartialFunction[Int, String] = { case 3 => "3" }
+}
+
+object WeekDay extends Enumeration {
+  type WeekDay = Value
+  val Mon, Tue, Wed, Thu, Fri, Sat, Sun = Value
+}
+
+object Enumeration {
+  import WeekDay._
+
+  def isWorkingDay(d: WeekDay) = !(d == Sat || d == Sun)
+  def workDays = WeekDay.values filter isWorkingDay
+}
+
+object DiscriminatedUnion {
+  // Use a sealed trait to limit inheritance to the current file
+  sealed trait HttpMethod
+
+  case class DELETE() extends HttpMethod
+  case class GET() extends HttpMethod
+  case class POST(body: String) extends HttpMethod
+  case class PUT(body: String) extends HttpMethod
+
+  def reqBody(req: HttpMethod) = req match {
+    case POST(body) => Some(body)
+    case PUT(body) => Some(body)
+    case _ => None
+  }
+
+  val postBody = reqBody(POST("name=Bobby"))
+  val getBody = reqBody(GET())
+}
+
+object ForComprehensions {
+  val comprehension = for (i <- List.range(0, 20) if i % 2 == 0) yield i
+  val multiComprehension =
+    for (
+      i <- 0 until 20;
+      j <- i until 20 if i + j == 32
+    ) yield (i, j)
+  def printNums = for (i <- 0 to 10) println(i)
+
+  val dogBreeds = List(Some("Doberman"), None, Some("Yorkshire Terrier"),
+    Some("Dachshund"), None, Some("Scottish Terrier"),
+    None, Some("Great Dane"), Some("Portuguese Water Dog"))
+
+  val filteredBreeds = for {
+    breedOption <- dogBreeds
+    breed <- breedOption
+    if breed.contains("Terrier") && !breed.startsWith("Yorkshire") // guard
+    upcaseBreed = breed.toUpperCase()
+  } yield upcaseBreed
+
+  val pattmatchedFor = for {
+    Some(breed) <- dogBreeds
+    upcasedBreed = breed.toUpperCase()
+  } yield upcasedBreed
 }
 
 object PatternMatching {
@@ -310,6 +313,34 @@ object Exceptions {
     }
 }
 
+/* Advanced Section */
+
+object CallByName {
+  // println should NOT be called
+  def a = Some(3).getOrElse { println("nothing from a"); 1 }
+  // println should be called
+  def b = None.getOrElse { println("nothing from b"); 1 }
+
+  def run = println(s"a: $a, b: $b")
+}
+
+object ValueClasses {
+  // Rules: Must extend AnyVal and have only one public val argument
+  // Can provide a performance increase as values are stored on the stack instead of the heap
+
+  // Add method to String class
+  implicit class StringStuff(val s: String) extends AnyVal {
+    def first: String = s.take(1)
+  }
+
+  val firstLetter = "Bobby".first
+
+  class Dollar(val value: Float) extends AnyVal {
+    override def toString = "$%.2f".format(value)
+  }
+  val benjamin = new Dollar(100)
+}
+
 object TailRecursion {
   import scala.annotation.tailrec
 
@@ -324,53 +355,6 @@ object TailRecursion {
 
     fact(i, 1)
   }
-}
-
-object Blocks {
-  // Evaluates all expressions returning the value of the last one
-  val codeBlock = {
-    println()
-    3
-  }
-  // Defines a function
-  val functionBlock = { x: Int => x + 1 }
-  // Defines a partial function (i.e., one that can't necessarily handle every input for a given type)
-  val partialFunctionBlock: PartialFunction[Int, String] = { case 3 => "3" }
-}
-
-object CallByName {
-  // println should NOT be called
-  def a = Some(3).getOrElse { println("nothing from a"); 1 }
-  // println should be called
-  def b = None.getOrElse { println("nothing from b"); 1 }
-
-  def run = println(s"a: $a, b: $b")
-}
-
-object ForComprehensions {
-  val comprehension = for (i <- List.range(0, 20) if i % 2 == 0) yield i
-  val multiComprehension =
-    for (
-      i <- 0 until 20;
-      j <- i until 20 if i + j == 32
-    ) yield (i, j)
-  def printNums = for (i <- 0 to 10) println(i)
-
-  val dogBreeds = List(Some("Doberman"), None, Some("Yorkshire Terrier"),
-    Some("Dachshund"), None, Some("Scottish Terrier"),
-    None, Some("Great Dane"), Some("Portuguese Water Dog"))
-
-  val filteredBreeds = for {
-    breedOption <- dogBreeds
-    breed <- breedOption
-    if breed.contains("Terrier") && !breed.startsWith("Yorkshire") // guard
-    upcaseBreed = breed.toUpperCase()
-  } yield upcaseBreed
-
-  val pattmatchedFor = for {
-    Some(breed) <- dogBreeds
-    upcasedBreed = breed.toUpperCase()
-  } yield upcasedBreed
 }
 
 object TypeClasses {
@@ -460,6 +444,24 @@ object Variance {
   // Will compile
   f1(new C)
   f1(new CSub)
+}
+
+trait Car {
+  val brand: String
+}
+
+trait Shiny {
+  val shineRefraction: Int
+}
+
+class BMW extends Car with Shiny {
+  val brand = "BMW"
+  val shineRefraction = 12
+}
+
+class Mercedes extends Car with Shiny {
+  val brand = "Mercedes"
+  val shineRefraction = 14
 }
 
 object Traits {
