@@ -117,6 +117,8 @@ object CaseClasses {
   val Calculator(brand, model) = calc
   // Modify a single value of an existing case class
   val calc2 = calc.copy(model = "TI-82")
+  // Value based equality
+  val equality = Calculator("HP", "TI-85") == Calculator("HP", "TI-85")
 }
 
 object Functions {
@@ -271,10 +273,6 @@ object ForComprehensions {
 }
 
 object PatternMatching {
-  def shine(c: Car with Shiny) = c match {
-    case b: BMW => s"BMW shine: ${b.shineRefraction}"
-    case m: Mercedes => s"Mercedes shine: ${m.shineRefraction}"
-  }
   def personName(p: Person) = p match {
     case Person("Bob", _) => "Hey Bob!"
     case Person("Bill", _) => "Hey Bill!"
@@ -465,8 +463,13 @@ class Mercedes extends Car with Shiny {
 }
 
 object Traits {
+  def shine(c: Car with Shiny) = c match {
+    case b: BMW => s"BMW shine: ${b.shineRefraction}"
+    case m: Mercedes => s"Mercedes shine: ${m.shineRefraction}"
+  }
+
   val bmw = new BMW
   val mercedes = new Mercedes
   val cars: List[Car with Shiny] = List(bmw, mercedes)
-  val carShine = cars.map(PatternMatching.shine)
+  val carShine = cars.map(shine)
 }
