@@ -353,6 +353,13 @@ object ErrorHandling {
 
 /* Advanced Section */
 
+object Streams {
+  val ones: Stream[Int] = Stream.cons(1, ones)
+  val naturalNumbers: Stream[Int] = Stream.from(1)
+  val evenNums = naturalNumbers.filter(_ % 2 == 0)
+  val first5EvenNums = evenNums.take(5).toList
+}
+
 object CallByName {
   // println should NOT be called
   def a = Some(3).getOrElse { println("nothing from a"); 1 }
