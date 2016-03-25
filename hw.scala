@@ -77,6 +77,10 @@ object Options {
   val some2 = Option(1) // Some(1)
   val some3 = Option(null) // None
   val equality = Some(1) == Some(1)
+  val comprehension = for {
+    num <- Some(1)
+    num2 <- Some(2)
+  } yield num + num2
 }
 
 object RegExes {
@@ -309,6 +313,42 @@ object Exceptions {
     catch {
       case e: Exception => 0
     }
+}
+
+object ErrorHandling {
+  import scala.util.{Try, Success, Failure}
+  import java.net.{URL, MalformedURLException}
+  import scala.io.Source
+
+  val success: Try[Int] = Success(3)
+  val failure: Try[Int] = Failure(new Exception("fail"))
+
+  def parseURL(url: String) = Try(new URL(url))
+  def parseHttpURL(url: String) = parseURL(url).filter(_.getProtocol == "http")
+
+  val boomtown = "http://boomtownroi.com"
+  val badURL = parseURL("localhost")
+  val host = parseURL(boomtown).map(_.getHost)
+  val maybeURL = parseURL("localhost").toOption
+  val maybeURL2 = parseURL(boomtown).toOption
+
+  val httpURL = parseHttpURL(boomtown)
+  val httpsURL = parseHttpURL("https://boomtownroi.com")
+
+  // Recover
+  val sum = (for {
+    int1 <- Try(Integer.parseInt("one"))
+    int2 <- Try(Integer.parseInt("two"))
+  } yield { int1 + int2 }).recover { case e => 0 }
+
+  // For comprehension
+  def getURLContent(url: String) =
+    for {
+      url <- parseURL(url)
+      connection <- Try(url.openConnection())
+      is <- Try(connection.getInputStream)
+      source = Source.fromInputStream(is)
+    } yield source.getLines()
 }
 
 /* Advanced Section */
