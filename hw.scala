@@ -161,12 +161,15 @@ object Collections {
   val negNumbers = -2 :: -1 :: Nil
   val combinedNumbers = negNumbers ++ numbers
   val head :: tail = numbers // Deconstruct
+  val flattened = List(List(1, 2), List(3, 4)).flatten
   // map, fold, filter
+  val incremented = numbers.map(_ + 1)
+  val filtered = numbers.filter { n => n > 5}
+  val leftFolded = numbers.foldLeft(0) { (m, n) => m + n }
   val zipped = List(1, 2, 3).zip(List("a", "b", "c"))
+  val zipped2 = (numbers, numbers.tail).zipped.map((a,b) => b - a)
   val partitioned = numbers.partition(_ % 2 == 0)
   val find = numbers.find(_ > 5)
-  val leftFolded = numbers.foldLeft(0) { (m, n) => m + n }
-  val flattened = List(List(1, 2), List(3, 4)).flatten
   // Seqs
   val seq1 = Seq("Clojure", "Scala")
   val seq2 = "Haskell" +: seq1
@@ -367,6 +370,16 @@ object CallByName {
   def b = None.getOrElse { println("nothing from b"); 1 }
 
   def run = println(s"a: $a, b: $b")
+}
+
+object Futures {
+  import scala.concurrent._
+  import scala.concurrent.duration._
+  import scala.concurrent.ExecutionContext.Implicits.global
+
+  val f1 = Future(2)
+  val f2 = f1.map(_ + 1)
+  val value = Await.result(f2, 5.second)
 }
 
 object ValueClasses {
